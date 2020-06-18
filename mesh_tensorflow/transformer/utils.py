@@ -478,6 +478,37 @@ def tpu_estimator_model_fn(model_type,
             model=transformer_model,
             features=mtf_features,
             variable_dtype=get_variable_dtype())
+      elif isinstance(transformer_model, transformer.Unitransformer) and model_type == 'aligned':
+        # pad so that there is enough room for the targets
+        #print('starting the aligned predition mode')
+        inputs = mtf.pad(
+            inputs, [0, sequence_length["targets"]], length_dim.name)
+        logits, _ = transformer_model.call_simple(
+            inputs=inputs, variable_dtype=get_variable_dtype(),
+            compute_loss=False,
+            mode=tf.estimator.ModeKeys.PREDICT)
+        #logits = tf.dtypes.cast(logits, dtype=tf.float32)
+        #print(logits)
+        label_c_dim = mtf.Dimension('vocab', 256)
+        #print(label_c_dim)
+        #mtf_samples = tf.argmax(tf.nn.softmax(logits), 1)
+        #mtf_samples = mtf.argmax(tf.nn.softmax(logits), -1)
+        mtf_samples = mtf.argmax(logits, label_c_dim)
+        #print(mtf_samples)
+        #print(logits)
+        #logits = mtf.anonymize(logits)
+        #print(logits)
+        #print(1)
+        #lowering = mtf.Lowering(graph, {mesh: mesh_impl})
+        #print(2)
+        #tf_logits = lowering.export_to_tf_tensor(logits)
+        #print(tf_logits)
+        #print(3)
+        #mtf_samples = mtf.argmax(tf.nn.softmax(tf_logits), -1)
+        #preds = tf.argmax(tf.nn.softmax(tf_logits), -1)
+        #print(4)
+        #mesh = mtf.Mesh(graph, "bert_mesh", var_placer)
+        #mtf_samples = mtf.import_tf_tensor(mesh, preds, [1024, 1024])
       elif isinstance(transformer_model, transformer.Unitransformer):
         # pad so that there is enough room for the targets
         inputs = mtf.pad(
