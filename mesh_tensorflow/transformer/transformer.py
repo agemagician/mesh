@@ -898,7 +898,7 @@ class Unitransformer(object):
       return float(ret)
 
   def call_simple(self,
-                  inputs,
+                  inputs = None,
                   targets = None,
                   compute_loss,
                   mode=tf.estimator.ModeKeys.TRAIN,
