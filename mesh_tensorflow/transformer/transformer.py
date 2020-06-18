@@ -899,7 +899,7 @@ class Unitransformer(object):
 
   def call_simple(self,
                   inputs,
-                  targets,
+                  targets = None,
                   compute_loss,
                   mode=tf.estimator.ModeKeys.TRAIN,
                   variable_dtype=mtf.VariableDType(tf.float32),
